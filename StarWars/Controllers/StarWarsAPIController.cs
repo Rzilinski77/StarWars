@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text.Json;
 using StarWars.Models;
+using Newtonsoft.Json;
 
 namespace StarWars.Controllers
 {
@@ -19,7 +18,7 @@ namespace StarWars.Controllers
         Planet planet = new Planet();
         JsonElement planetUrl;
         JsonElement speciesUrl;
-        List<string> residentUrlList;
+        List<JsonElement> residentUrlList = new List<JsonElement>();
         Random random = new Random();
 
         public async Task<Person> GetPerson()
@@ -38,7 +37,7 @@ namespace StarWars.Controllers
                     planetUrl = jDoc.RootElement.GetProperty("homeworld");
                     var speciesArray = jDoc.RootElement.GetProperty("species");
                     speciesUrl = speciesArray[0];
-                    
+
 #warning sometimes there is a null value returned in species causing an error
 
                     person.Name = name.ToString();
@@ -77,7 +76,7 @@ namespace StarWars.Controllers
             using (var httpClient = new HttpClient())
             {
                 // make a blank list of Person to add residents to later
-                List<Person> resident = new List<Person>();
+                List<string> resident = new List<string>();
 
                 using (var response = await httpClient.GetAsync($"https://swapi.co/api/planets/{num}"))
                 {
@@ -93,16 +92,36 @@ namespace StarWars.Controllers
                     var population = jDoc.RootElement.GetProperty("population");
                     var jsonList = jDoc.RootElement.GetProperty("residents");
 
+                    var jsonResidentList = jsonList.EnumerateArray();
+
+                    foreach (var residentUrl in jsonResidentList)
+                    {
+                        residentUrlList.Add(residentUrl);
+                    }
+
                     planet.Name = name.ToString();
                     planet.Climate = climate.ToString();
                     planet.Terrain = terrain.ToString();
                     planet.Gravity = gravity.ToString();
                     planet.Population = population.ToString();
-
-#warning need to use jsonList somehow to populate to residentUrlList 
-
-#warning once residentUrlList is populated, foreach through to add residents through an API call for each
                 }
+
+                foreach (var residentUrl in residentUrlList)
+                {
+                    using (var response = await httpClient.GetAsync($"{residentUrl}"))
+                    {
+                        var stringResponse = await response.Content.ReadAsStringAsync();
+
+                        jDoc = JsonDocument.Parse(stringResponse);
+
+                        var name = jDoc.RootElement.GetProperty("name");
+
+                        string nameString = name.ToString();
+
+                        resident.Add(nameString);
+                    }
+                }
+                planet.Residents = resident;
             }
 
             return planet;

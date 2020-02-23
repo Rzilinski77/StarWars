@@ -15,5 +15,11 @@
 <h1>TERRAIN: @Model.Terrain</h1>
 <h1>GRAVITY: @Model.Gravity</h1>
 <h1>POPULATION: @Model.Population</h1>
+<br />
+<h1>RESIDENTS:</h1>
+@foreach (String resident in Model.Residents)
+{
+    <h1>@resident</h1>
+}
 
 
