@@ -136,3 +136,4 @@ C:\Users\rzili\source\repos\StarWars\StarWars\obj\Debug\netcoreapp3.1\StarWars.V
 C:\Users\rzili\source\repos\StarWars\StarWars\obj\Debug\netcoreapp3.1\StarWars.dll
 C:\Users\rzili\source\repos\StarWars\StarWars\obj\Debug\netcoreapp3.1\StarWars.pdb
 C:\Users\rzili\source\repos\StarWars\StarWars\obj\Debug\netcoreapp3.1\Razor\Views\Home\GetPerson.cshtml.g.cs
+C:\Users\rzili\source\repos\StarWars\StarWars\obj\Debug\netcoreapp3.1\Razor\Views\Home\GetPlanet.cshtml.g.cs

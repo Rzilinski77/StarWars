@@ -25,14 +25,26 @@ namespace StarWars.Controllers
             return View();
         }
 
-        // we make an async method that will call the cardController
-        // and return to us a number of cards
+        // we make an async method that will call the starwarsController
+        // and return to us a Person Object
         public async Task<IActionResult> GetPerson()
         {
-            Person person = await starwarsAPI.GetData();
+            Person person = await starwarsAPI.GetPerson();
                 
             return View(person);
         }
+
+        // we make an async method that will call the starwarsController
+        // and return to us a Planet
+        public async Task<IActionResult> GetPlanet()
+        {
+            Planet planet = await starwarsAPI.GetPlanet();
+
+            return View(planet);
+        }
+
+
+
 
 
         public IActionResult Privacy()

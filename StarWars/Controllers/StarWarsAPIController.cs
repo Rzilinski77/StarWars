@@ -16,12 +16,14 @@ namespace StarWars.Controllers
     {
         private JsonDocument jDoc;
         Person person = new Person();
+        Planet planet = new Planet();
         JsonElement planetUrl;
         JsonElement speciesUrl;
+        List<string> residentUrlList;
+        Random random = new Random();
 
-        public async Task<Person> GetData()
+        public async Task<Person> GetPerson()
         {
-            Random random = new Random();
             int num = random.Next(87);
             using (var httpClient = new HttpClient())
             {
@@ -36,6 +38,8 @@ namespace StarWars.Controllers
                     planetUrl = jDoc.RootElement.GetProperty("homeworld");
                     var speciesArray = jDoc.RootElement.GetProperty("species");
                     speciesUrl = speciesArray[0];
+                    
+#warning sometimes there is a null value returned in species causing an error
 
                     person.Name = name.ToString();
                     person.Gender = gender.ToString();
@@ -65,6 +69,43 @@ namespace StarWars.Controllers
             }
 
             return person;
+        }
+
+        public async Task<Planet> GetPlanet()
+        {
+            int num = random.Next(61);
+            using (var httpClient = new HttpClient())
+            {
+                // make a blank list of Person to add residents to later
+                List<Person> resident = new List<Person>();
+
+                using (var response = await httpClient.GetAsync($"https://swapi.co/api/planets/{num}"))
+                {
+
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+
+                    jDoc = JsonDocument.Parse(stringResponse);
+
+                    var name = jDoc.RootElement.GetProperty("name");
+                    var climate = jDoc.RootElement.GetProperty("climate");
+                    var terrain = jDoc.RootElement.GetProperty("terrain");
+                    var gravity = jDoc.RootElement.GetProperty("gravity");
+                    var population = jDoc.RootElement.GetProperty("population");
+                    var jsonList = jDoc.RootElement.GetProperty("residents");
+
+                    planet.Name = name.ToString();
+                    planet.Climate = climate.ToString();
+                    planet.Terrain = terrain.ToString();
+                    planet.Gravity = gravity.ToString();
+                    planet.Population = population.ToString();
+
+#warning need to use jsonList somehow to populate to residentUrlList 
+
+#warning once residentUrlList is populated, foreach through to add residents through an API call for each
+                }
+            }
+
+            return planet;
         }
     }
 }
