@@ -17,9 +17,16 @@
 <h1>POPULATION: @Model.Population</h1>
 <br />
 <h1>RESIDENTS:</h1>
-@foreach (String resident in Model.Residents)
+@if (Model.Residents.Count == 0)
 {
-    <h1>@resident</h1>
+    <h1>No Residents in Database</h1>
+}
+else
+{
+    @foreach (String resident in Model.Residents)
+    {
+        <h1>@resident</h1>
+    }
 }
 
 

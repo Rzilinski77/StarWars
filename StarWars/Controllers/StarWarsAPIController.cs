@@ -118,7 +118,14 @@ namespace StarWars.Controllers
 
                         string nameString = name.ToString();
 
-                        resident.Add(nameString);
+                        if (nameString != null)
+                        {
+                            resident.Add(nameString);
+                        }
+                        else
+                        {
+                            resident.Add("No Resident in Database");
+                        }
                     }
                 }
                 planet.Residents = resident;
