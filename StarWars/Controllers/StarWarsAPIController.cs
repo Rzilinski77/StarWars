@@ -18,6 +18,7 @@ namespace StarWars.Controllers
         Planet planet = new Planet();
         JsonElement planetUrl;
         JsonElement speciesUrl;
+        List<JsonElement> speciesUrlList = new List<JsonElement>();
         List<JsonElement> residentUrlList = new List<JsonElement>();
         Random random = new Random();
 
@@ -35,10 +36,12 @@ namespace StarWars.Controllers
                     var name = jDoc.RootElement.GetProperty("name");
                     var gender = jDoc.RootElement.GetProperty("gender");
                     planetUrl = jDoc.RootElement.GetProperty("homeworld");
-                    var speciesArray = jDoc.RootElement.GetProperty("species");
-                    speciesUrl = speciesArray[0];
+                    var jsonList = jDoc.RootElement.GetProperty("species").EnumerateArray();
 
-#warning sometimes there is a null value returned in species causing an error
+                    foreach (var speciesUrl in jsonList)
+                    {
+                        residentUrlList.Add(speciesUrl);
+                    }
 
                     person.Name = name.ToString();
                     person.Gender = gender.ToString();
@@ -55,16 +58,17 @@ namespace StarWars.Controllers
                     person.HomePlanet = homePlanet.ToString();
                 }
 
-                using (var response = await httpClient.GetAsync($"{speciesUrl}"))
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
+                foreach (var speciesUrl in speciesUrlList)
+                    using (var response = await httpClient.GetAsync($"{speciesUrl}"))
+                    {
+                        var stringResponse = await response.Content.ReadAsStringAsync();
 
-                    jDoc = JsonDocument.Parse(stringResponse);
+                        jDoc = JsonDocument.Parse(stringResponse);
 
-                    var species = jDoc.RootElement.GetProperty("name");
+                        var species = jDoc.RootElement.GetProperty("name");
 
-                    person.Species = species.ToString();
-                }
+                        person.Species = species.ToString();
+                    }
             }
 
             return person;
@@ -73,6 +77,10 @@ namespace StarWars.Controllers
         public async Task<Planet> GetPlanet()
         {
             int num = random.Next(61);
+            if (num == 28)
+            {
+                num++;
+            }
             using (var httpClient = new HttpClient())
             {
                 // make a blank list of Person to add residents to later
@@ -90,11 +98,9 @@ namespace StarWars.Controllers
                     var terrain = jDoc.RootElement.GetProperty("terrain");
                     var gravity = jDoc.RootElement.GetProperty("gravity");
                     var population = jDoc.RootElement.GetProperty("population");
-                    var jsonList = jDoc.RootElement.GetProperty("residents");
+                    var jsonList = jDoc.RootElement.GetProperty("residents").EnumerateArray();
 
-                    var jsonResidentList = jsonList.EnumerateArray();
-
-                    foreach (var residentUrl in jsonResidentList)
+                    foreach (var residentUrl in jsonList)
                     {
                         residentUrlList.Add(residentUrl);
                     }

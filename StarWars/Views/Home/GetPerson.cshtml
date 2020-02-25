@@ -11,6 +11,10 @@
 
 
 <h1>NAME: @Model.Name</h1>
+@if(Model.Species == null) {
+<h1>SPECIES: No species type in database</h1>
+} else {
 <h1>SPECIES: @Model.Species</h1>
+}
 <h1>GENDER: @Model.Gender</h1>
 <h1>HOMEWORLD: @Model.HomePlanet</h1>
